@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="download-pdf">Download Pdf</div>
+    <div id="genJD">
+        Generate JD
+    </div>
+    <div id="result"></div>
+    <script>
+        const downloadPdfBtn = document.getElementById('download-pdf');
+        const genJDBtn = document.getElementById('genJD');
+        const result = document.getElementById('result');
+
+        const generateJD = async () => {
+            const token = JSON.parse(sessionStorage.getItem('token'));
+
+            const response = await fetch("http://localhost:9999/generate/job-description", {
+                method: "POST",
+                body: JSON.stringify({
+                    token,
+                    jobTitle: "Senior Mobile Engineer",
+                    skills: ["native Android", "native iOS", "KMM", "Jetpack Compose", "Cross-platform", "Design Patterns", "Data stucture and Algorithm"],
+                    extras: ""
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*"
+                }
+
+            });
+            const json = await response.json();
+            return json.data;
+
+            return "";
+        };
+
+        const downloadPdf = async () => {
+            const token = JSON.parse(sessionStorage.getItem('token'));
+
+            const response = await fetch("http://localhost:9999/test-download-pdf", {
+                method: "POST",
+                body: JSON.stringify({
+                    token
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*"
+                }
+
+            });
+            const json = await response.json();
+            return json.message;
+        }
+
+        genJDBtn.addEventListener('click', async () => {
+            result.textContent = 'Fetching...';
+            const jd = await generateJD();
+            result.textContent = jd;
+        });
+
+        downloadPdfBtn.addEventListener('click', async () => {
+            result.textContent = 'Processing...';
+            const message = await downloadPdf() || "Download fail!";
+            result.textContent = message;
+        });
+    </script>
+</body>
+
+</html>
